@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Redux</title>
+</head>
+<body>
+  <p>
+    Número: <span id="myNumber"></span>
+  </p>
+  <button onclick="increase()">Aumentar</button>
+  <button onclick="decrease()">Disminuir</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    let state = {
+      number: 0
+    };
+    // reducer: su objetivo es proveer la lógica para tratar el state dependiendo de la acción que se le indique a realizar.
+    /* Parámetros
+     *  state: objeto state de la app, es ese que está declarado ahí arriba.
+     *  action: objeto que contiene la acción a ejecutar.
+     */
+    // retorna el actual o un nuevo state.
+    const reducer = (state, action) => {
+      let newState; // no debemos modificar el estado original (acostumbrese a ello).
+      console.log( "Ejecutando reducer...", action );
+      switch ( action.type )
+      {
+        case 'INCREASE':
+          newState = Object.assign({}, state); // utilizamos assign para realizar una copia del objeto state.
+          newState.number = state.number + 1;
+          return newState;
+        case 'DECREASE':
+          newState = Object.assign({}, state);
+          newState.number = state.number - 1;
+          return newState;
+        default:
+          return state;
+      }
+    };
+    // store: se le asigna la misión de controlar el state; y este haciendo responsablemente su tarea,
+    // provee funciones para llevar a cabo estos controles.
+    // El segundo argumento es lo que retorna el reducer.
+    let store = Redux.createStore(reducer, state);
+    // ------------- Acciones (siempre lleva la propiedad type) -------------
+    let actionIncrease = {
+      type: 'INCREASE'
+    };
+    let actionDecrease = {
+      type: 'DECREASE'
+    };
+    // ----------------------------------------------------------------------
+    // Función encargada de renderizar el span id=myNumber en el DOM.
+    const updateNumber = () => {
+      let domSpan = document.getElementById("myNumber");
+      domSpan.innerHTML = store.getState().number;
+    };
+    updateNumber(); // para renderizar el valor inicial en html.
+    // dispatch: es una función que proporciona el store, activa al reducer enviando la acción a ejecutar.
+    const increase = () => {
+      store.dispatch(actionIncrease);
+    };
+    const decrease = () => {
+      store.dispatch(actionDecrease);
+    };
+    // subscribe: es una función proporcionada por el store, actua como escuchador ejecutándose cada vez que se hace un dispatch.
+    store.subscribe(updateNumber);
+  </script>
+</body>
+</html>
